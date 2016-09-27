@@ -1,0 +1,305 @@
+
+
+
+Internet        Engineering     Task Force                      *. *****
+Internet-Draft                                                      ****
+Intended status: Standards Track                          August 8, 2016
+Expires: February 9, 2017
+
+
+Basic Requirements of Extensible Provisioning Protocol (EPP) Domain Name Mapping  
+                 Extension for Bundling Registration
+
+                  draft-bundling-registration-base-00
+
+
+1.  Introduction
+
+   Bundled domain names are those who share the same TLD but whose
+   second level labels are variants, or those who has identical second
+   level labels for which certain parameters are shared in different
+   TLDs.  For example, Public Interest Registry, request to implement
+   technical bundling of second level domains for .NGO and .ONG.  So we
+   have two kinds of bundled domain names.  First one is in the form of
+   "V-label.TLD" in which the second level labels (V-label) are variants
+   sharing the same TLD; Second one is in the form of "LABEL.V-tld" in
+   which the second level labels(LABEL) are same with the different TLDs
+   (V-tld);
+
+   The basic Extensible Provisioning Protocol (EPP) domain name mapping
+   [RFC5731] does
+   not specify how to register the bindled names which share some
+   attributes.
+
+   In order to meet above requirements of the bundled names
+   registration, this document describes basic requirements of extension of the EPP domain
+   name mapping [RFC5731] for the provisioning and management of bundled
+   names.This document is specified using the Extensible Markup Language
+   (XML) 1.0 as described in [W3C.REC-xml-20040204]  and XML Schema
+   notation as described in [W3C.REC-xmlschema-1-20041028]  and
+   [W3C.REC-xmlschema-2-20041028].
+
+   The EPP core protocol specification [RFC5730] provides a complete
+   description of EPP command and response structures.  A thorough
+   understanding of the base protocol specification is necessary to
+   understand the extension of mapping described in this document.
+
+   This document uses lots of the concepts of the IDN, so a thorough
+   understanding of the IDNs for Application (IDNA, described in
+
+   [RFC5890], [RFC5891], and [RFC5892]) and a thorough understanding of
+   variant approach discussed in [RFC4290] are both required.
+
+2.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [RFC2119].
+
+   uLable is defined in [RFC 5890]. uLabel is expressed in this document
+   as a number of characters with the format of U+XXXX where XXXX is a
+   UNICODE point.
+
+   "b-dn-1.0" in this document is used as an abbreviation for
+   urn:ietf:params:xml:ns:b-dn-1.0.
+
+   In examples, "C:" represents lines sent by a protocol client and "S:"
+   represents lines returned by a protocol server.  Indentation and
+   white space in examples are provided only to illustrate element
+   relationships and are not a REQUIRED feature of this specification.
+
+   XML is case sensitive.  Unless stated otherwise, XML specifications
+   and examples provided in this document MUST be interpreted in the
+   character case presented to develop a conforming implementation.
+
+3.  Definitions
+
+   The following definitions are used in this document:
+
+   o  Registered Domain Name (RDN), represents the valid domain name
+      that users submitted for registration by the first time.
+
+   o  Bundled Domain Name (BDN), represents the bundled domain name
+      produced according to the bundled domain name registration policy.
+
+4.  Overview
+
+   Bundled names, brought about the need for multiple domain names to be
+   registered and managed according to some special policy.  In this
+   model, the registry typically accepts a domain registration request
+   (i.e.  EPP domain <create> command) containing the domain name to be
+   registered.  This domain name is referred to as the RDN in this
+   document.  As part of the processing of the registration request, the
+   registry or registrar generates a set of bundled names that are
+   related to the RDN, either programmatically or with the guidance of
+   registration policies, and place them in the registration package
+   together with the RDN.  The bundled domain names can be registered separately
+   this time or next time.
+
+
+   
+   In current practices, there are many kinds of bundlings. First one is strict bundling, which
+   requires all bundled names to share many attributes. When creating, 
+   updating, or transfering of any of the bundled domain names,
+   all bundled domain names will be created, updated or transferred.
+   Second one is partial bundling, which requires that
+   at least the bundled domain names if registered should be registered by the same registrant.
+   Third one is relax bundling, which has not specific requirements to the domain registration.
+     
+   In order to avoid the possible phising problem, this document suggests
+   all registries or resgrars follow the restrict bundling or partial bundling.
+
+
+5.  Requirement for Bundling Registration of Names
+
+   The bundled names whether they are in the form of "V-label.TLD" or in
+   the form of "LABEL.V-tld" should share some parameter or attributes
+   assoicated with domain names.  Typically,
+
+   Strict Bundled names registration will share
+   the following parameters or attributes:
+   o Registrar Ownership
+   o Registration and Expiry Dates
+   o Registrant, Admin, Billing, and Technical Contacts
+   o Name Server Association
+   o Domain Status
+   o Applicable grace periods (Add Grace Period, Renewal Grace Period,
+   Auto-Renewal Grace Period, Transfer Grace Period, and Redemption
+   Grace Period)
+
+
+    Partial Bundled names registration will share
+   the following parameters or attributes: 
+   o Registrant, Admin, Billing, and Technical Contacts
+
+     
+
+   Because Strict Bundled names registration and Partial Bundled names registration
+   share the same parameters or
+   attributes of Registrant, Admin, Billing, and Technical Contacts, 
+   the EPP command should do some processing for these
+   requirements:
+
+   o When performing a domain Create, either BDN or RDN will be
+   accepted.  If the domain name is available, both BDN and RDN will be
+   registered.
+   
+
+   This document specifies the basic requirements of Extensible Provisioning Protocol (EPP) Domain Name Mapping Extension for Bundling Registration.
+   For Strict bundling registration, [ID:draft-ietf-regext-bundling-registration] is recommended;
+   For Partial bundling registration, [ID:draft-wilcox-cira-idn-eppext] is recommended.
+
+
+6.  Object Attributes
+
+   This extension defines following additional elements to the EPP
+   domain name mapping [RFC5731].  All of these additional elements can
+   be got from <domain:info> command.
+
+6.1.  RDN
+
+   The RDN is an ASCII name or an IDN with the A-label [RFC5890] form.
+   In this document, its corresponding element is <b-dn:rdn>.  An
+   optional attribute "uLabel" associated with <b-dn:rdn> is used to
+   represent the U-label [RFC5890] form.  An optional boolean
+   "activated" attribute, with a default true value, is used to indicate
+   the presence of the label in the zone file.
+
+   For example: <b-dn:rdn uLabel="U+5B9E""U+4F8B".example> xn--
+   fsq270a.example</b-dn:rdn>
+
+6.2.  BDN
+
+   The BDN is an ASCII name or an IDN with the A-label [RFC5890] form
+   which is converted from the corresponding BDN.  In this document, its
+   corresponding element is <b-dn:bdn>.  An optional attribute "uLabel"
+   associated with <b-dn:bdn> is used to represent the U-label [RFC5890]
+   form.
+
+   For example: <b-dn:bdn uLabel="U+5BE6""U+4F8B".example> xn--
+   fsqz41a.example</b-dn:bdn>
+
+
+6.3.  IDNtable
+
+   The IDNtable element is based on the repertoireType type defined in
+   the extension and is a simple string token limited to several characters.
+   The "repertoire" in the [ID:draft-wilcox-cira-idn-eppext] and the "IDNtable"
+   in [ID-draft-gould-idn-table] have the similar meaning.
+
+   For example: <b-dn:IDNtable>fr</b-idn:IDNtable>
+
+
+7.  EPP Command Mapping
+
+   A detailed description of the EPP syntax and semantics can be found
+   in the EPP core protocol specification [RFC5730].  The command
+   mappings described here are specifically for use in provisioning and
+   managing bundled names via EPP.
+   For the IDNtable related to IDN, pls follow the [ID:draft-gould-idn-table].
+
+
+
+7.1.  EPP <create> Command
+
+   This extension defines additional elements to extend the EPP <create>
+   command described in the EPP domain name mapping [RFC5731] for
+   bundled names registration.
+
+   In addition to the EPP command elements described in the EPP domain
+   mapping [RFC5731], the <create> command SHALL contain an <extension>
+   element.  The <extension> element SHOULD contain a child
+   <b-dn:create> element that identifies the bundle namespace and the
+   location of the bundle name schema.
+
+   Example <create> command:
+
+   C:<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+   C:<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+   C:      <command>
+   C:        <create>
+   C:              <domain:create
+   C:               xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">
+   C:                <domain:name>xn--fsq270a.example</domain:name>
+   C:                <domain:period unit="y">2</domain:period>
+   C:                <domain:registrant>123</domain:registrant>
+   C:                <domain:contact type="admin">123</domain:contact>
+   C:                <domain:contact type="tech">123</domain:contact>
+   C:                <domain:authInfo>
+   C:                      <domain:pw>2fooBAR</domain:pw>
+   C:                </domain:authInfo>
+   C:              </domain:create>
+   C:        </create>
+   C:        <extension>
+   C:              <b-dn:create
+   C:               xmlns:b-dn="urn:ietf:params:xml:ns:b-dn-1.0">
+   C:             <b-dn:rdn uLabel="U+5B9E""U+4F8B".example>
+   C:                    xn--fsq270a.example</b-dn:rdn>
+   C:              </b-dn:create>
+   C:        </extension>
+   C:        <clTRID>ABC-12345</clTRID>
+   C:      </command>
+   C:</epp>
+
+
+
+   When an <create> command has been processed successfully, the EPP
+   <creData> element MUST contain child elements as described in the EPP
+   domain mapping [RFC5731].  In addition, the EPP <extension> element
+   SHOULD contain a child <b-dn:creData> element that identifies the
+   extension namespace if the domain object has data associated with
+   this extension and based on its service policy.  The <b-dn:creData>
+   element contains the <b-dn:bundle> element.
+
+ Example <create> Response for an authorized client:
+
+ S:<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+ S:<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+ S:      <response>
+ S:        <result code="1000">
+ S:              <msg>Command completed successfully</msg>
+ S:        </result>
+ S:        <resData>
+ S:              <domain:creData
+ S:               xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">
+ S:                <domain:name>xn--fsq270a.example</domain:name>
+ S:                <domain:crDate>1999-04-03T22:00:00.0Z</domain:crDate>
+ S:                <domain:exDate>2001-04-03T22:00:00.0Z</domain:exDate>
+ S:              </domain:creData>
+ S:        </resData>
+ S:        <extension>
+ S:              <b-dn:creData
+ S:               xmlns:b-dn="urn:ietf:params:xml:ns:b-dn-1.0">
+ S:                <b-dn:bundle>
+ S:                      <b-dn:rdn uLabel="U+5B9E""U+4F8B".example
+ S:                       >xn--fsq270a.example</b-dn:rdn>
+ S:                      <b-dn:bdn uLabel="U+5BE6""U+4F8B".example
+ S:                       >xn--fsqz41a.example</b-dn:bdn>
+ S:                </b-dn:bundle>
+ S:              </b-dn:creData>
+ S:        </extension>
+ S:        <trID>
+ S:              <clTRID>ABC-12345</clTRID>
+ S:              <svTRID>54322-XYZ</svTRID>
+ S:        </trID>
+ S:      </response>
+ S:</epp>
+
+   <create> Response for the unauthorized client has not been
+   changed,see [RFC5731] for detail.
+
+   An EPP error response MUST be returned if an <create> command cannot
+   be processed for any reason.
+
+
+
+
+
+
+7.2.  Other Commands
+    
+   Any other commends are not changed. But if the registries/registrars try to follow specific bundling registration,
+ For Strict bundling registration, [ID:draft-ietf-regext-bundling-registration] is recommended;
+   For Partial bundling registration, [ID:draft-wilcox-cira-idn-eppext] is recommended.
+
+ 
